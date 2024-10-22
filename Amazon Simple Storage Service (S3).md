@@ -56,8 +56,58 @@ Here, the output indicates an error: *upload failed*. This is because we have re
 
 ## Objective - 5: Create a Bucket Policy
 
-A bucket policy is a set of permissions associated with an S3 bucket. It is used to control access to an entire bucket or specific directories within a bucket.
+A bucket policy is a set of permissions associated with an S3 bucket. It is used to control access to an entire bucket or specific directories within it.
+
+Amazon Resource Names (ARNs) uniquely identify AWS resources. Each section of an ARN is separated by a colon `:` and represents a specific component in the path to the specified resource. The general format of an ARN is: arn:partition:service:region:account-id:resource
+
+For Amazon S3, the `region` and `account-id` fields are optional, so the ARN for an S3 bucket looks like this: arn:aws:s3:::reportbucket987987
+
+The `/*` at the end of the bucket name allows the policy to apply to all objects within the bucket.
+
+### Steps Taken:
+
+1. I generated a bucket policy using **AWS Policy Manager**, which looks like this:
+
+   ![Bucket Policy](https://github.com/user-attachments/assets/a4c8bf66-e8ec-4fb4-a653-d2121462bde4)
+
+2. I added the generated policy to the **Bucket Policy** section:
+
+   ![Bucket Policy Section](https://github.com/user-attachments/assets/0930b908-f01b-422b-accd-817e73eaaab8)
+
+3. To test the policy, I uploaded and retrieved a file from **EC2** to the S3 bucket.
+
+   ![Test Upload](https://github.com/user-attachments/assets/aaf2f459-6933-41fe-933b-9663a9c6a8a0)
+
+4. To ensure read access, I added another statement to the bucket policy allowing me to view the uploaded file:
+
+   ![Added Policy Statement](https://github.com/user-attachments/assets/adabbe5f-22b6-4e08-83a9-a018876a4849)
+
+5. After adding the statement, I successfully accessed the uploaded file, which no longer displayed an "Access Denied" error:
+
+   ![Access Granted](https://github.com/user-attachments/assets/4a892561-538c-4425-9877-76ab190addb8)
+
 
 ## Objective - 6: Use Bucket Versioning
 
-Versioning in Amazon S3 allows us to preserve, retrieve, and restore every version of every object stored in an S3 bucket. I will enable versioning on the bucket to protect against accidental deletions or overwrites.
+**Versioning** is a method of keeping multiple versions of an object in the same bucket. It allows me to recover from unintended user actions and application failures by preserving, retrieving, and restoring all versions of objects stored in the bucket.
+
+### Steps Taken:
+
+1. I enabled **Bucket Versioning** for my S3 bucket:
+
+   ![Enable Versioning](https://github.com/user-attachments/assets/b5a677e4-5cad-4466-9d46-f3819fcfa5de)
+
+2. With versioning enabled, all objects within the bucket can have multiple versions. Versioning cannot be enabled for individual objects—it applies to the entire bucket.
+
+3. I updated the policy to include `s3:GetObjectVersion`, allowing me to retrieve specific object versions:
+
+   ![Versioning Policy](https://github.com/user-attachments/assets/753112a0-7df4-4c2c-9d5a-0d71982ee499)
+
+4. I tested the versioning feature by deleting an object from the bucket:
+
+   ![Deleted Object](https://github.com/user-attachments/assets/eb1592c6-bd4a-447a-a86f-0cd953e94e8f)
+
+5. After deleting the object, I enabled the version view. The deleted object appeared with a "delete marker," indicating that previous versions still exist:
+
+   ![Delete Marker](https://github.com/user-attachments/assets/f447a602-63e8-41c0-bc4b-848dc080d622)
+
